@@ -16,7 +16,7 @@ public class Assemblage : MonoBehaviour
     [SerializeField] float rotMargin = 10.0f;
 
     // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         InitializeFragments();
     }
@@ -37,50 +37,57 @@ public class Assemblage : MonoBehaviour
         }
     }
 
-    public void AttachShard(Attachable fragment)
+    public void AttachFragment(Attachable fragment)
     {
-        // Must be attached first to get correct localTranform values
-        currentAttachables.Add(fragment);
-        fragment.transform.parent = transform;
         fragment.Attach();
+        currentAttachables.Add(fragment);
 
         Transform fragmentTf = fragment.transform;
+        fragmentTf.parent = transform; // Must be set early for correct localTransform values
 
-        if (posByFragment.ContainsKey(fragment))
+        if (!compositeFragments.Contains(fragment)) return;
+
+        Vector3 destPos = posByFragment[fragment];
+        float destRot = rotByFragment[fragment];
+
+        float posDelta = CalcPosDiff(fragmentTf.localPosition, destPos); // This can also be used for scoring
+        float rotDelta = CalcRotDiff(fragmentTf.localRotation.eulerAngles.z, destRot); // This can also be used for scoring
+
+        // Check if perfect attach
+        if (posDelta < posMargin && rotDelta < rotMargin)
         {
-            Vector3 destPos = posByFragment[fragment];
-            float destRot = rotByFragment[fragment];
-
-            float posDelta = CalcPosDiff(fragmentTf.localPosition, destPos); // This can also be used for scoring
-            float rotDelta = CalcRotDiff(fragmentTf.localRotation.eulerAngles.z, destRot); // This can also be used for scoring
-
-            // Check if perfect attach
-            if (posDelta < posMargin && rotDelta < rotMargin)
-            {
-                fragmentTf.SetLocalPositionAndRotation(destPos, Quaternion.Euler(0, 0, destRot));
-                posDelta = 0;
-                rotDelta = 0;
-            }
+            fragmentTf.SetLocalPositionAndRotation(destPos, Quaternion.Euler(0, 0, destRot));
+            posDelta = 0;
+            rotDelta = 0;
         }
     }
 
-    float CalcPosDiff(Vector3 current, Vector3 target)
+    private float CalcPosDiff(Vector3 current, Vector3 target)
     {
         return Vector3.Magnitude(target - current);
     }
 
-    float CalcRotDiff(float current, float target)
+    private float CalcRotDiff(float current, float target)
     {
         float diff = Mathf.Abs(target - current);
-        if (diff > 180) diff = 360 - diff;
+        if (diff > 180) diff = 360 - diff; // Accounts for periodicity of rotation
 
         return diff;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.layer != LayerMask.NameToLayer("Fragments")) return; // Have to get layer through collider. gameObject has layer of root rb (Vase)
+        if (collision.gameObject.layer != LayerMask.NameToLayer("Fragments")) return;
 
-        AttachShard(collision.gameObject.GetComponent<Attachable>());
+        AttachFragment(collision.gameObject.GetComponent<Attachable>());
+    }
+
+    /// <summary>
+    /// Returns a copy of the list containing fragments belonging to this assemblage.
+    /// </summary>
+    /// <returns></returns>
+    public List<Attachable> GetFragments()
+    {
+        return new List<Attachable>(compositeFragments);
     }
 }
