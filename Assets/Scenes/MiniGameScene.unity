@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   assemblage: {fileID: 2183315311259973863}
-  spawnInterval: 2
+  spawnInterval: 3
   spawnHeight: 6
   spawnWidth: 3
 --- !u!4 &72032104

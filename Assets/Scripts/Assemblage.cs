@@ -5,12 +5,23 @@ using UnityEngine.SocialPlatforms.Impl;
 
 public class Assemblage : MonoBehaviour
 {
+    private struct Pose
+    {
+        public Pose(Vector3 pos, float rot)
+        {
+            Pos = pos;
+            Rot = rot;
+        }
+
+        public Vector3 Pos { get; }
+        public float Rot { get; }
+    }
+
     [SerializeField] List<Attachable> compositeFragments; // Contains fragments belonging to this assemblage
 
-    Dictionary<Attachable, Vector3> posByFragment = new(); // Stores original local positions of fragments relative assemblage
-    Dictionary<Attachable, float> rotByFragment = new(); // Stores original local ritations of fragments relative assemblage
-
     List<Attachable> currentAttachables = new(); // Contains attachables currently attached to the assemblage during play
+
+    Dictionary<Attachable, Pose> poseByFragment = new(); // Stores original local positions and rotations of fragments relative assemblage
     
     [SerializeField] float posMargin = 0.1f;
     [SerializeField] float rotMargin = 10.0f;
@@ -19,6 +30,22 @@ public class Assemblage : MonoBehaviour
     private void Awake()
     {
         InitializeFragments();
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer != LayerMask.NameToLayer("Fragments")) return;
+
+        AttachFragment(collision.collider.GetComponent<Attachable>(), collision.otherCollider.GetComponent<Attachable>());
+    }
+
+    /// <summary>
+    /// Returns a copy of the list containing fragments belonging to this assemblage.
+    /// </summary>
+    /// <returns></returns>
+    public List<Attachable> GetFragments()
+    {
+        return new List<Attachable>(compositeFragments);
     }
 
     /// <summary>
@@ -30,36 +57,71 @@ public class Assemblage : MonoBehaviour
         {
             Transform tf = fragment.transform;
 
-            posByFragment.Add(fragment, tf.localPosition);
-            rotByFragment.Add(fragment, tf.localRotation.eulerAngles.z);
+            poseByFragment.Add(fragment, new Pose(tf.localPosition, tf.localEulerAngles.z));
 
             fragment.gameObject.SetActive(false);
         }
     }
 
-    public void AttachFragment(Attachable fragment)
+    private void AttachFragment(Attachable incomingFragment, Attachable collidedFragment)
     {
-        fragment.Attach();
-        currentAttachables.Add(fragment);
+        incomingFragment.Attach();
+        currentAttachables.Add(incomingFragment);
 
-        Transform fragmentTf = fragment.transform;
-        fragmentTf.parent = transform; // Must be set early for correct localTransform values
+        Transform incomingFragmentTf = incomingFragment.transform;
+        incomingFragmentTf.parent = transform; // Must be set early for correct localTransform values
 
-        if (!compositeFragments.Contains(fragment)) return;
+        if (!compositeFragments.Contains(incomingFragment)) return;
 
-        Vector3 destPos = posByFragment[fragment];
-        float destRot = rotByFragment[fragment];
+        Pose incomingPose = new(incomingFragment.transform.localPosition, incomingFragment.transform.localEulerAngles.z);
 
-        float posDelta = CalcPosDiff(fragmentTf.localPosition, destPos); // This can also be used for scoring
-        float rotDelta = CalcRotDiff(fragmentTf.localRotation.eulerAngles.z, destRot); // This can also be used for scoring
+        List<Pose> destPoses = new();
 
-        // Check if perfect attach
-        if (posDelta < posMargin && rotDelta < rotMargin)
+        destPoses.Add(poseByFragment[incomingFragment]);
+
+        if (poseByFragment.ContainsKey(collidedFragment))
         {
-            fragmentTf.SetLocalPositionAndRotation(destPos, Quaternion.Euler(0, 0, destRot));
-            posDelta = 0;
-            rotDelta = 0;
+            //destPoses.Add(new Pose(GetRelativeLocalPosition(incomingFragment, collidedFragment), GetRelativeLocalRotation(incomingFragment, collidedFragment)));
+            destPoses.Add(GetRelativeLocalPose(incomingFragment, collidedFragment));
         }
+
+        foreach (Pose destPose in destPoses)
+        {
+            if (IsPerfectAttach(incomingPose, destPose))
+            {
+                incomingFragmentTf.SetLocalPositionAndRotation(destPose.Pos, Quaternion.Euler(0, 0, destPose.Rot));
+                break;
+            }
+        }
+    }
+
+    private Pose GetRelativeLocalPose(Attachable incomingFragment, Attachable collidedFragment)
+    {
+        // Calculate relative position
+        Vector3 ogIncomingPos = poseByFragment[incomingFragment].Pos;
+        Vector3 ogCollidedPos = poseByFragment[collidedFragment].Pos;
+
+        Vector3 relativePos = ogIncomingPos - ogCollidedPos; // From frame of collided
+
+        Vector3 relativePosWorld = collidedFragment.transform.TransformPoint(relativePos);
+        Vector3 relativePosLocal = transform.InverseTransformPoint(relativePosWorld);
+
+        // Calculate relative rotation
+        float ogIncomingRot = poseByFragment[incomingFragment].Rot;
+        float ogCollidedRot = poseByFragment[collidedFragment].Rot;
+
+        float relativeRot = ogIncomingRot - ogCollidedRot; // From frame of collided
+
+        float relativeRotLocal = collidedFragment.transform.localEulerAngles.z + relativeRot;
+
+        return new Pose(relativePosLocal, relativeRotLocal);
+    }
+
+    private bool IsPerfectAttach(Pose pose1, Pose pose2)
+    {
+        float posDelta = CalcPosDiff(pose1.Pos, pose2.Pos); // This can also be used for scoring
+        float rotDelta = CalcRotDiff(pose1.Rot, pose2.Rot); // This can also be used for scoring
+        return posDelta < posMargin && rotDelta < rotMargin;
     }
 
     private float CalcPosDiff(Vector3 current, Vector3 target)
@@ -73,21 +135,5 @@ public class Assemblage : MonoBehaviour
         if (diff > 180) diff = 360 - diff; // Accounts for periodicity of rotation
 
         return diff;
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.layer != LayerMask.NameToLayer("Fragments")) return;
-
-        AttachFragment(collision.gameObject.GetComponent<Attachable>());
-    }
-
-    /// <summary>
-    /// Returns a copy of the list containing fragments belonging to this assemblage.
-    /// </summary>
-    /// <returns></returns>
-    public List<Attachable> GetFragments()
-    {
-        return new List<Attachable>(compositeFragments);
     }
 }
