@@ -133,6 +133,9 @@ GameObject:
   m_Component:
   - component: {fileID: 82825881}
   - component: {fileID: 82825882}
+  - component: {fileID: 82825885}
+  - component: {fileID: 82825884}
+  - component: {fileID: 82825883}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -167,7 +170,89 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85fc2099e2666b04891190d6bd97bdc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameEvents:
+  - {fileID: 82825884}
+  - {fileID: 82825885}
+  - {fileID: 82825883}
+  - {fileID: 2073759138}
   customer1: {fileID: 2128348750}
+--- !u!114 &82825883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82825880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 254d2e19b55241b41a4a330d7a50ea4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  description: Short Pause
+  OnPlay:
+    m_PersistentCalls:
+      m_Calls: []
+  IsFinished: 0
+  waitTime: 3
+--- !u!114 &82825884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82825880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 254d2e19b55241b41a4a330d7a50ea4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  description: Short Pause
+  OnPlay:
+    m_PersistentCalls:
+      m_Calls: []
+  IsFinished: 0
+  waitTime: 5
+--- !u!114 &82825885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82825880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27d42432f15949e4e952aa0683be56d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  description: Open Hatch
+  OnPlay:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2047925402}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1751957291}
+        m_TargetAssemblyTypeName: UnityEngine.Renderer, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  IsFinished: 0
 --- !u!1 &138587378
 GameObject:
   m_ObjectHideFlags: 0
@@ -992,6 +1077,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1860499259}
   - component: {fileID: 1860499260}
+  - component: {fileID: 1860499261}
   m_Layer: 0
   m_Name: Customer2
   m_TagString: Untagged
@@ -1066,6 +1152,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1860499261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1860499258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27d42432f15949e4e952aa0683be56d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  description: 
+  OnPlay:
+    m_PersistentCalls:
+      m_Calls: []
+  IsFinished: 0
 --- !u!1 &1938047603
 GameObject:
   m_ObjectHideFlags: 0
@@ -1329,6 +1432,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2073759137}
+  - component: {fileID: 2073759138}
   m_Layer: 0
   m_Name: Customers
   m_TagString: Untagged
@@ -1356,6 +1460,35 @@ Transform:
   - {fileID: 972907425}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2073759138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073759136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27d42432f15949e4e952aa0683be56d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  description: 
+  OnPlay:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2128348753}
+        m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+        m_MethodName: Play
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: WitchWalkIn
+          m_BoolArgument: 0
+        m_CallState: 2
+  IsFinished: 0
 --- !u!1 &2128348750
 GameObject:
   m_ObjectHideFlags: 0
@@ -1366,6 +1499,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2128348752}
   - component: {fileID: 2128348751}
+  - component: {fileID: 2128348753}
   m_Layer: 0
   m_Name: Customer1
   m_TagString: Untagged
@@ -1440,6 +1574,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2073759137}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &2128348753
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2128348750}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 36ce19a51cc2ad0419d9c6eb3ef46e1a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

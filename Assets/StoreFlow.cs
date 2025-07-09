@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class StoreFlow : MonoBehaviour
 {
+    [SerializeField] GameEvent[] gameEvents;
     public GameObject customer1;
 
 
@@ -12,10 +13,27 @@ public class StoreFlow : MonoBehaviour
     {
         //startday
         //Loop through all customers
-        for (int i = 0; i < 5; i++)
+        //for (int i = 0; i < 5; i++)
+        //{
+        //    Debug.Log("Kund nr" + i);
+        //    //Handles customers and minigames by calling customerActions
+        //}
+
+        StartCoroutine(Co_PlayInteraction());
+    }
+
+    private IEnumerator Co_PlayInteraction()
+    {
+        foreach(GameEvent gameEvent in gameEvents)
         {
-            Debug.Log("Kund nr" + i);
-            //Handles customers and minigames by calling customerActions
+            Debug.Log("Executing first event");
+            gameEvent.PlayEvent();
+            while (!gameEvent.IsFinished)
+            {
+                Debug.Log("Waiting on event finish");
+
+                yield return null;
+            }
         }
     }
 
