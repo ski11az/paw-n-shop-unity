@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class StoreFlow : MonoBehaviour
 {
     [SerializeField] GameEvent[] gameEvents;
     public GameObject customer1;
 
+    public void StartDay()
+    {
+        StartCoroutine(Co_PlayInteraction());
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -19,7 +24,6 @@ public class StoreFlow : MonoBehaviour
         //    //Handles customers and minigames by calling customerActions
         //}
 
-        StartCoroutine(Co_PlayInteraction());
     }
 
     private IEnumerator Co_PlayInteraction()
@@ -35,12 +39,6 @@ public class StoreFlow : MonoBehaviour
                 yield return null;
             }
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }
 

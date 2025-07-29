@@ -7,7 +7,7 @@ public class GameEvent : MonoBehaviour
 {
     [SerializeField] private string description;
 
-    [SerializeField] UnityEvent OnPlay;
+    [SerializeField] protected UnityEvent OnPlay;
     public bool IsFinished = false;
 
     public virtual void PlayEvent()
